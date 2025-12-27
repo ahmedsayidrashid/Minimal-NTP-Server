@@ -1,0 +1,4 @@
+# Not necessarily required, but nice to have if you want to use the CLI 
+# to set the custom time.
+click>=8.0.0
+
