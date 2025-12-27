@@ -1,4 +1,4 @@
-# Custom NTP Server
+# Minimal NTP Server
 
 Custom NTP Server for any clients on local networks to reference.
 
