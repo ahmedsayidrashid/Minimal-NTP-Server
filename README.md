@@ -25,3 +25,4 @@ Create a python program that waits for request on this port, and send a custom p
 Of course, the PI will be running `Chrony`, an NTP client and server. My PC will be running this Python script as NTP server.
 
 Eventually, I'd love to port over this project to C.
+Note that the script requires elevated permissions. Linux inteperts any port under 1024 as privlidged ports
