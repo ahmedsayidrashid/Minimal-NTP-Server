@@ -26,3 +26,5 @@ Of course, the PI will be running `Chrony`, an NTP client and server. My PC will
 
 Eventually, I'd love to port over this project to C.
 Note that the script requires elevated permissions. Linux inteperts any port under 1024 as privlidged ports
+
+TODO: add steps on how to make the script runnable without sudo, basically allowing the script to access 'privlidged ports.'
