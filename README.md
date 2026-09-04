@@ -28,3 +28,13 @@ Eventually, I'd love to port over this project to C.
 Note that the script requires elevated permissions. Linux inteperts any port under 1024 as privlidged ports
 
 TODO: add steps on how to make the script runnable without sudo, basically allowing the script to access 'privlidged ports.'
+
+## Notes
+
+Because we use a shared connection via a ethernet cable, to find the IP of the PI, simply run the following;
+
+```bash
+sudo nmap -sn 10.42.0.0/24
+```
+
+This will get all the devices on that subnet, and the IP as well.
