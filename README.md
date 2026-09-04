@@ -28,12 +28,6 @@ A future goal is to port this project to C and benchmark its performance.
 
 Note that the script requires elevated permissions, as Linux treats any port below 1024 as privileged.
 
-## Notes
+## Developer Notes
 
-Since this setup uses a shared connection over an Ethernet cable, the Pi's IP address can be found by running the following command:
-
-```bash
-sudo nmap -sn 10.42.0.0/24
-```
-
-This will list all devices on the subnet along with their IP addresses.
+For setup instructions (disabling `Chrony` on the server, running the script with sudo, configuring a client to use this server as a reference, etc.), see [DEVELOPER_NOTES.md](DEVELOPER_NOTES.md).
