@@ -112,7 +112,6 @@ def get_custom_time(cli_time=None):
         return parse_custom_time(cli_time)
     
     # Check environment variable
-    print(f"Checking environment variable: {os.environ.get('NTP_CUSTOM_TIME')}")
     env_time = os.environ.get('NTP_CUSTOM_TIME')
     if env_time:
         print(f"Using custom time from environment variable: {env_time}")
@@ -135,7 +134,7 @@ def parse_ntp_request(data):
         # CHANGE THIS: Bytes 40-47 is the Transmit Timestamp of the CLIENT
         # This becomes the ORIGIN Timestamp of the SERVER response.
         client_transmit_timestamp = struct.unpack('!Q', data[40:48])[0]
-        print(f"Client Transmit Timestamp (to be used as Origin): {client_transmit_timestamp}")
+        print(f"Client transmit timestamp (to be used as origin timestamp): {client_transmit_timestamp}")
         return client_transmit_timestamp
     except struct.error:
         return None
@@ -235,12 +234,10 @@ def main(custom_time, port):
         print("Using current system time")
     
     # Create UDP socket
-    print(f"Creating socket on port {port}")
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     
     try:
         # Bind to the specified port
-        print(f"Binding socket to port {port}")
         server_socket.bind(('0.0.0.0', port))
         print(f"NTP server is running on port {port}")
         print("Waiting for NTP requests...")
