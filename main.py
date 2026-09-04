@@ -235,10 +235,12 @@ def main(custom_time, port):
         print("Using current system time")
     
     # Create UDP socket
+    print(f"Creating socket on port {port}")
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     
     try:
         # Bind to the specified port
+        print(f"Binding socket to port {port}")
         server_socket.bind(('0.0.0.0', port))
         print(f"NTP server is running on port {port}")
         print("Waiting for NTP requests...")
@@ -254,17 +256,30 @@ def main(custom_time, port):
                 print(f"Received invalid NTP request from {addr}, ignoring...")
                 continue
             
-            # Get receive time (when we received the request)
-            receive_time = datetime.datetime.now(datetime.timezone.utc)
-            
-            # Get transmit time (the time we want to send)
+            # Get receive time (when we received the request), on the same
+            # clock/timeline we're presenting to clients. If we're spoofing
+            # a custom time, the "receive" and "transmit" timestamps must
+            # both be expressed on that fake timeline (just a few
+            # microseconds apart), not a mix of real and fake time -
+            # otherwise the client (chrony) computes a bogus offset/delay
+            # from inconsistent timestamps and may not apply the jump.
+            now_real = datetime.datetime.now(datetime.timezone.utc)
             if use_custom_time:
                 # Calculate elapsed time since server started
                 elapsed_seconds = time.time() - server_start_time
                 # Add elapsed time to the custom base time
+                receive_time = base_time + datetime.timedelta(seconds=elapsed_seconds)
+            else:
+                receive_time = now_real
+            
+            # Get transmit time (the time we want to send). Recompute
+            # elapsed time so transmit_time is a hair after receive_time,
+            # just like a real server that takes a little time to respond.
+            if use_custom_time:
+                elapsed_seconds = time.time() - server_start_time
                 transmit_time = base_time + datetime.timedelta(seconds=elapsed_seconds)
             else:
-                transmit_time = receive_time
+                transmit_time = datetime.datetime.now(datetime.timezone.utc)
             
             # Build NTP response packet
             response = build_ntp_response(origin_timestamp, receive_time, transmit_time)
