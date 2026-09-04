@@ -1,39 +1,39 @@
 # NTP Server
 
-Custom NTP server for any clients on local networks to reference.
+A custom NTP server that clients on a local network can reference for time synchronization.
 
 ## Current Setup
 
-I have my PI connected to my PC via ethernet, where my PC is acting as a DHCP server.
+My Raspberry Pi is connected to my PC via Ethernet, with the PC acting as a DHCP server.
 
-Although that may sound fancy, I just set up my ethernet port to share the network connection to anything connected via ethernet, and my PC acts as a router to my PI.
+Although that may sound fancy, I simply configured my Ethernet port to share my network connection with anything connected via Ethernet, allowing my PC to act as a router for the Pi.
 
-Digging into my setup, I realized that PI's don't really have much of a secure way to find out what time it is. It pretty much blindly follows any time source, and in most cases, it depends on a network connection to use it's pool of NTP servers, a local NTP server, or a GPS.
+While setting this up, I realized that Raspberry Pis do not have a secure way of determining the current time. They generally trust any available time source and, in most cases, depend on a network connection to reach a pool of NTP servers, a local NTP server, or a GPS module.
 
-On boot, PI's usually don't know the time, and often rely on a time source to correct it, however, this project is to tinker with this capability and see how much I can play with this concept.
+On boot, Raspberry Pis typically do not know the current time and rely on an external source to correct it. This project explores that dependency and examines how far it can be pushed.
 
-Doing my research, I've noticed that **a lot** of things are time dependent, such as package management, certificates, containers etc.
+Through my research, I've found that a surprising number of systems are time-dependent, including package management, certificates, and containers, among others.
 
-This project is mainly for learning purposes, I've played with time source synchronization before, this project is more so for learning networking and breaking things ;)
+This project is primarily for learning purposes. I have worked with time synchronization before, and this project is an opportunity to deepen my understanding of networking concepts through hands-on experimentation.
 
 ## Milestones
 
-As far as I am aware, PI's expect requests on port 123 (default port for NTP information).
+As far as I am aware, Raspberry Pis send requests on port 123, the default port for NTP communication.
 
-Create a python program that waits for request on this port, and send a custom packet to my PI that represents time information.
+The goal is to create a Python program that listens for requests on this port and sends a custom packet containing time information back to the Pi.
 
-The PI will be running `Chrony`, an NTP client and server. My PC will be running this Python script to send packets containing time info via UDP.
+The Pi runs `Chrony`, an NTP client and server, while the PC runs this Python script to send time information via UDP packets.
 
-Eventually, I'd love to port over this project to C, maybe even benchmark things.
+A future goal is to port this project to C and benchmark its performance.
 
-Note that the script requires elevated permissions. Linux interprets any port under 1024 as a privileged port.
+Note that the script requires elevated permissions, as Linux treats any port below 1024 as privileged.
 
 ## Notes
 
-Because we use a shared connection via a ethernet cable, to find the IP of the PI, simply run the following;
+Since this setup uses a shared connection over an Ethernet cable, the Pi's IP address can be found by running the following command:
 
 ```bash
 sudo nmap -sn 10.42.0.0/24
 ```
 
-This will get all the devices on that subnet, and the IP as well.
+This will list all devices on the subnet along with their IP addresses.
