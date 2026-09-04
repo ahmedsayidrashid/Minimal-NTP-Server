@@ -1,4 +1,4 @@
 # Not necessarily required, but nice to have if you want to use the CLI 
 # to set the custom time.
+python-dotenv>=1.0.0
 click>=8.0.0
-

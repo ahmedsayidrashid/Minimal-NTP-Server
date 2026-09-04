@@ -10,6 +10,9 @@ import time
 import datetime
 import os
 import click
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # NTP epoch: January 1, 1900 00:00:00 UTC
 NTP_EPOCH = datetime.datetime(1900, 1, 1, 0, 0, 0, tzinfo=datetime.timezone.utc)
@@ -109,10 +112,13 @@ def get_custom_time(cli_time=None):
         return parse_custom_time(cli_time)
     
     # Check environment variable
+    print(f"Checking environment variable: {os.environ.get('NTP_CUSTOM_TIME')}")
     env_time = os.environ.get('NTP_CUSTOM_TIME')
     if env_time:
+        print(f"Using custom time from environment variable: {env_time}")
         return parse_custom_time(env_time)
     
+    print("Using current system time")
     # Default to current system time
     return datetime.datetime.now(datetime.timezone.utc)
 
@@ -126,13 +132,12 @@ def parse_ntp_request(data):
         return None
     
     try:
-        print(f"Data received: {data}")
-        # Extract origin timestamp (bytes 24-31)
-        origin_timestamp = struct.unpack('!Q', data[24:32])[0]
-        print(f"Origin timestamp: {origin_timestamp}")
-        return origin_timestamp
+        # CHANGE THIS: Bytes 40-47 is the Transmit Timestamp of the CLIENT
+        # This becomes the ORIGIN Timestamp of the SERVER response.
+        client_transmit_timestamp = struct.unpack('!Q', data[40:48])[0]
+        print(f"Client Transmit Timestamp (to be used as Origin): {client_transmit_timestamp}")
+        return client_transmit_timestamp
     except struct.error:
-        print(f"Error parsing NTP request: {struct.error}")
         return None
 
 
@@ -158,7 +163,7 @@ def build_ntp_response(origin_time, receive_time, transmit_time):
     
     # Stratum: 1 (primary server) - this is the server that is directly connected to the GPS or other time source
     # stratum 2 is a secondary server
-    stratum = 2
+    stratum = 1
     
     # Poll interval: 4 (16 seconds) - reasonable default
     # note this is only a hint, chrony will determine how often to poll the server dynamically
