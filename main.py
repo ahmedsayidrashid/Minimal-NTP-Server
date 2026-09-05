@@ -37,7 +37,7 @@ def datetime_to_ntp_timestamp(dt):
     seconds = int(delta.total_seconds())
     
     # Calculate fractional seconds (microseconds / 1,000,000 * 2^32)
-    # Convert microseconds to seconds, than to a 32 bit integer
+    # Convert microseconds to a fraction of a second, then to a 32-bit integer
     microseconds = delta.microseconds
     fractional = int((microseconds / 1_000_000) * (2 ** 32))
     return (seconds << 32) | fractional
@@ -131,8 +131,8 @@ def parse_ntp_request(data):
         return None
     
     try:
-        # CHANGE THIS: Bytes 40-47 is the Transmit Timestamp of the CLIENT
-        # This becomes the ORIGIN Timestamp of the SERVER response.
+        # Bytes 40-47 hold the CLIENT's Transmit Timestamp.
+        # Per RFC 5905, we echo it back as the Origin Timestamp in our response.
         client_transmit_timestamp = struct.unpack('!Q', data[40:48])[0]
         print(f"Client transmit timestamp (to be used as origin timestamp): {client_transmit_timestamp}")
         return client_transmit_timestamp
@@ -164,7 +164,7 @@ def build_ntp_response(origin_time, receive_time, transmit_time):
     # stratum 2 is a secondary server
     stratum = 1
     
-    # Poll interval: 4 (16 seconds) - reasonable default
+    # Poll interval: 1 (2^1 = 2 seconds)
     # note this is only a hint, chrony will determine how often to poll the server dynamically
     poll = 1
     
@@ -174,12 +174,11 @@ def build_ntp_response(origin_time, receive_time, transmit_time):
     
     # Root delay: 1 ms delay
     # added a little bit of delay for chrony to not be suspicious about a fake time source
-    # this feild is to indicate the delay between getting the time from the source (GPS or other time source)
+    # this field is to indicate the delay between getting the time from the source (GPS or other time source)
     root_delay = int(0.001 * (1 << 16)) 
     
-    # Root dispersion: 0 (no dispersion for primary server)
-    # some here, little delay for chrony to not be suspicious
-    # this feild is to indicate the uncertainty and maximum error of the time from the source (GPS or other time source)
+    # Root dispersion: 1 ms (a small non-zero value, not 0, for the same reason as root_delay above)
+    # this field is to indicate the uncertainty and maximum error of the time from the source (GPS or other time source)
     root_dispersion = int(0.001 * (1 << 16)) 
     
     # Reference ID: "LOCL" (local clock)
