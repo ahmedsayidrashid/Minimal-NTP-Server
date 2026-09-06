@@ -2,6 +2,10 @@
 
 A custom NTP server that clients on a local network can reference for time synchronization.
 
+## Demo Video
+
+https://github.com/user-attachments/assets/b385a62f-0ba1-44c3-85a7-66934fb29d33
+
 ## Current Setup
 
 My Raspberry Pi is connected to my PC via Ethernet, with the PC acting as a DHCP server.
